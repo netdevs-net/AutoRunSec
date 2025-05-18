@@ -1,6 +1,6 @@
 # Construction InfraSec Homelab Environment
 
-This repository contains a secure, production-grade environment managed with Docker Compose. It includes runtime security hardening using Falco for container behavior monitoring, and is ready for integration with TheHive for automated incident response.
+This repository contains a secure, production-grade homelab environment managed with Docker Compose. It includes runtime security hardening using Falco for container behavior monitoring, and is ready for playbook integration with TheHive for automated incident response.
 
 ---
 
@@ -16,6 +16,7 @@ This repository contains a secure, production-grade environment managed with Doc
 | Loki API          | http://localhost:3100               | N/A                    | Log aggregation |
 | TheHive           | http://localhost:9005               | N/A                    | Incident response platform |
 | Cortex            | http://localhost:9006               | N/A                    | Automated analysis |
+| AWX               | http://localhost:8043               | admin / password       | Ansible automation & orchestration |
 | Falco             | N/A (logs to stdout/file)           | N/A                    | Container runtime security |
 
 ---
