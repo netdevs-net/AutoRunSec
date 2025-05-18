@@ -1,0 +1,129 @@
+services:
+  minio:
+    image: minio/minio
+    container_name: minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      - MINIO_ROOT_USER=admin
+      - MINIO_ROOT_PASSWORD=admin123
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio-data:/data
+
+  loki:
+    image: grafana/loki:2.8.0
+    container_name: loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+
+  promtail:
+    image: grafana/promtail:2.8.0
+    container_name: promtail
+    volumes:
+      - /var/log:/var/log
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - ./promtail-config.yml:/etc/promtail/promtail.yml
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: -config.file=/etc/promtail/promtail.yml
+    depends_on:
+      - loki
+
+  grafana:
+    image: grafana/grafana:10.4.2
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - loki
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - prometheus-data:/prometheus
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+
+  thehive:
+    image: strangebee/thehive:5.2
+    container_name: thehive
+    ports:
+      - "9005:9000"
+    volumes:
+      - thehive-data:/data
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.18
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - xpack.security.enabled=false
+    ports:
+      - "9200:9200"
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+
+  cortex:
+    image: thehiveproject/cortex:3.1
+    container_name: cortex
+    ports:
+      - "9006:9001"
+    environment:
+      - JOB_DIRECTORY=/tmp
+      - CORTEX_ELASTICSEARCH_URL=http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
+
+  awx:
+    image: quay.io/ansible/awx:21.14.0
+    container_name: awx
+    ports:
+      - "8043:8043"
+    environment:
+      - SECRET_KEY=awxsecretkey
+      - AWX_ADMIN_USER=admin
+      - AWX_ADMIN_PASSWORD=password
+    volumes:
+      - awx-data:/var/lib/awx
+
+  oceanhealing:
+    build:
+      context: ../OceanHealing
+      dockerfile: Dockerfile
+    container_name: oceanhealing
+    ports:
+      - "5543:5543"
+    env_file:
+      - ../OceanHealing/.env
+    restart: unless-stopped
+
+  nginx-exporter:
+    image: nginx/nginx-prometheus-exporter:1.1.0
+    container_name: nginx-exporter
+    ports:
+      - "9113:9113"
+    command:
+      - '-nginx.scrape-uri=http://oceanhealing:5543/stub_status'
+    depends_on:
+      - oceanhealing
+
+volumes:
+  minio-data:
+  thehive-data:
+  esdata:
+  grafana-data:
+  prometheus-data:
+  awx-data:
