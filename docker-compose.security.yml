@@ -1,0 +1,39 @@
+services:
+  thehive:
+    image: strangebee/thehive:5.2
+    container_name: thehive
+    ports:
+      - "9005:9000"
+    volumes:
+      - thehive-data:/data
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.18
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - xpack.security.enabled=false
+    ports:
+      - "9200:9200"
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+
+  cortex:
+    image: thehiveproject/cortex:3.1
+    container_name: cortex
+    ports:
+      - "9006:9001"
+    environment:
+      - JOB_DIRECTORY=/tmp
+      - CORTEX_ELASTICSEARCH_URL=http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
+
+volumes:
+  thehive-data:
+  esdata:
