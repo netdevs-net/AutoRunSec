@@ -1,0 +1,10 @@
+services:
+  nginx-exporter:
+    image: nginx/nginx-prometheus-exporter:1.1.0
+    container_name: nginx-exporter
+    ports:
+      - "9113:9113"
+    command:
+      - '-nginx.scrape-uri=http://oceanhealing:5543/stub_status'
+    depends_on:
+      - oceanhealing
