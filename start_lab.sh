@@ -30,32 +30,28 @@ if [[ "$MODE" == "compose" ]]; then
   fi
   docker-compose pull
   docker-compose up -d
+  docker compose -f frontend.yml up -d
   sleep 5
   echo "✅ LAB BOOTSTRAP COMPLETE"
   echo ""
-  echo "Access your lab services at these URLs:"
-  echo "- 🏥 OceanHealing App:      http://localhost:5543"
+  echo "Automated Response Security:"
   echo "- 📊 Prometheus:           http://localhost:9090"
   echo "- 📈 Grafana:              http://localhost:3000 (admin / admin123)"
-  echo "- 🚦 Nginx Exporter:        http://localhost:9113/metrics"
-  echo "- 🛢️  MinIO Console:        http://localhost:9001   (admin / admin123)"
-  echo "- 📜 Loki API:              http://localhost:3100"
+  echo "- 🛢️ MinIO Console:        http://localhost:9001   (admin / admin123)"
+  echo "- 🗄️ Elasticsearch:          http://localhost:9200"
   echo "- 🐝 TheHive:               http://localhost:9005"
   echo "- 🧠 Cortex:                http://localhost:9006"
-  echo "- 🛠️  AWX:                   http://localhost:8043 (admin / password)"
+
   echo ""
-  echo "🔎 Nginx status:           http://localhost:5543/stub_status"
+  echo "Data Sources"
+  echo "- 🚦 Nginx Exporter:        http://localhost:9113/metrics"
+  echo "- 🔎 Nginx status:           http://localhost:5543/stub_status"
+  echo "- 📜 Loki API:              http://localhost:3100"
+  echo ""
+  echo "- 🚪 ARS Entry Page:         http://localhost:8080/"
   echo ""
   echo "Tip: Copy/paste these URLs into your browser."
 
-  # Check AWX container status
-  AWX_STATUS=$(docker ps --filter 'name=awx' --format '{{.Status}}')
-  if [[ -z "$AWX_STATUS" ]]; then
-    echo "⚠️  AWX container is not running. Showing last 20 lines of logs for troubleshooting:"
-    docker logs --tail 20 awx || echo "No logs found for AWX."
-  else
-    echo "✅ AWX container status: $AWX_STATUS"
-  fi
 }]}},{
 
 elif [[ "$MODE" == "k8s" ]]; then
