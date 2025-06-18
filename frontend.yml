@@ -1,0 +1,9 @@
+version: '3.8'
+services:
+  frontend:
+    image: nginx:alpine
+    container_name: admin-cover-frontend
+    ports:
+      - "8080:80"
+    volumes:
+      - ./www:/usr/share/nginx/html:ro

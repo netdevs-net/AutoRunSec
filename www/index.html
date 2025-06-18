@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Homelab Admin Portal</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo-placeholder">
+        <!-- Replace this div with <img src='logo.png'> when logo is available -->
+        <span>NetDevs Logo</span>
+      </div>
+      <h1>Homelab Admin Portal</h1>
+      <p class="subtitle">Central access to all your services</p>
+    </header>
+    <main>
+      <h2 class="section-title">Core Services</h2>
+      <div class="links-grid">
+        <a href="http://localhost:9090" target="_blank" class="card prometheus"><img src="logos/prometheus.svg" alt="Prometheus Logo" class="service-logo"> Prometheus</a>
+        <a href="http://localhost:3000" target="_blank" class="card grafana">📈 Grafana</a>
+        <a href="http://localhost:9113/metrics" target="_blank" class="card nginx-exporter">🚦 Nginx Exporter</a>
+        <a href="http://localhost:9001" target="_blank" class="card minio">🛢️ MinIO Console</a>
+        <a href="http://localhost:3100" target="_blank" class="card loki">📜 Loki API</a>
+        <a href="http://localhost:9005" target="_blank" class="card thehive">🐝 TheHive</a>
+        <a href="http://localhost:9006" target="_blank" class="card cortex">🧠 Cortex</a>
+        <a href="http://localhost:8043" target="_blank" class="card awx">🛠️ AWX</a>
+      </div>
+      <h2 class="section-title">Observed Containers</h2>
+      <div class="links-grid" id="observed-containers">
+        <a href="http://localhost:5543" target="_blank" class="card oceanhealing">🏥 OceanHealing App</a>
+        <!-- Add more observed containers here -->
+      </div>
+    </main>
+    <footer>
+      <p>Secured by Falco & Tailscale (recommended)</p>
+      <p class="netdevs-credit">A NetDevs.net project</p>
+    </footer>
+  </div>
+</body>
+</html>

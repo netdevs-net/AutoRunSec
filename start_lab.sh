@@ -2,8 +2,8 @@
 
 show_help() {
     echo "Usage: $0 [--compose] [--k8s] [--help]"
-    echo "  --compose   Start lab using Docker Compose (default)"
-    echo "  --k8s       Start lab using MicroK8s-in-Docker (advanced)"
+    echo "  lab using Docker(default)"
+    echo "  --k8s      lab using MicroK8s-in-Docker (advanced)"
     echo "  --help      Show this help message"
 }
 
@@ -52,7 +52,7 @@ if [[ "$MODE" == "compose" ]]; then
   echo ""
   echo "Tip: Copy/paste these URLs into your browser."
 
-}]}},{
+} 
 
 elif [[ "$MODE" == "k8s" ]]; then
   echo "🛠️  Bootstrapping advanced lab with MicroK8s-in-Docker..."

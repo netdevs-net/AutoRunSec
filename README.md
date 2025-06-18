@@ -14,7 +14,7 @@ This repository contains a secure, production-grade homelab environment managed 
 | Nginx Exporter    | http://localhost:9113/metrics       | N/A                    | Nginx metrics exporter |
 | MinIO Console     | http://localhost:9001               | admin / admin123       | S3-compatible storage |
 | Loki API          | http://localhost:3100               | N/A                    | Log aggregation |
-| TheHive           | http://localhost:9005               | N/A                    | Incident response platform |
+| TheHive           | http://localhost:9005               | admin / secret         | Incident response platform |
 | Cortex            | http://localhost:9006               | N/A                    | Automated analysis |
 | AWX               | http://localhost:8043               | admin / password       | Ansible automation & orchestration |
 | Falco             | N/A (logs to stdout/file)           | N/A                    | Container runtime security |

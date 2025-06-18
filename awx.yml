@@ -1,0 +1,38 @@
+services:
+  awx:
+    image: quay.io/ansible/awx:21.14.0
+    container_name: awx
+    ports:
+      - "8043:80"
+    environment:
+      - SECRET_KEY=awxsecretkey
+      - AWX_ADMIN_USER=admin
+      - AWX_ADMIN_PASSWORD=password
+      - DATABASE_HOST=awx_postgres
+      - DATABASE_PORT=5432
+      - DATABASE_NAME=awx
+      - DATABASE_USER=awx
+      - DATABASE_PASSWORD=awxpass
+    volumes:
+      - awx-data:/var/lib/awx
+    depends_on:
+      - awx_postgres
+
+  awx_postgres:
+    image: postgres:13
+    container_name: awx_postgres
+    environment:
+      - POSTGRES_USER=awx
+      - POSTGRES_PASSWORD=awxpass
+      - POSTGRES_DB=awx
+    volumes:
+      - awx-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "awx"]
+      interval: 10s
+      retries: 5
+      start_period: 10s
+
+volumes:
+  awx-data:
+  awx-postgres-data:
