@@ -8,35 +8,49 @@
 </head>
 <body>
   <div class="container">
-    <header>
-      <div class="logo-placeholder">
-        <!-- Replace this div with <img src='logo.png'> when logo is available -->
-        <span>NetDevs Logo</span>
+    <header class="header-flex">
+      <img src="/logos/netdevs-logo.jpg" alt="NetDevs Logo" class="netdevs-logo" />
+      <div class="header-titles">
+        <h1>Homelab Admin Portal</h1>
+        <p class="subtitle">Central access to all your services</p>
       </div>
-      <h1>Homelab Admin Portal</h1>
-      <p class="subtitle">Central access to all your services</p>
     </header>
     <main>
-      <h2 class="section-title">Core Services</h2>
+      <h2 class="section-title">Observability</h2>
       <div class="links-grid">
-        <a href="http://localhost:9090" target="_blank" class="card prometheus"><img src="logos/prometheus.svg" alt="Prometheus Logo" class="service-logo"> Prometheus</a>
+        <a href="http://localhost:9090" target="_blank" class="card prometheus">📊 Prometheus</a>
         <a href="http://localhost:3000" target="_blank" class="card grafana">📈 Grafana</a>
-        <a href="http://localhost:9113/metrics" target="_blank" class="card nginx-exporter">🚦 Nginx Exporter</a>
         <a href="http://localhost:9001" target="_blank" class="card minio">🛢️ MinIO Console</a>
-        <a href="http://localhost:3100" target="_blank" class="card loki">📜 Loki API</a>
+        <a href="http://localhost:9200" target="_blank" class="card elasticsearch">🗄️ Elasticsearch</a>
+      </div>
+
+      <h2 class="section-title">Automated Response Security</h2>
+      <div class="links-grid">
         <a href="http://localhost:9005" target="_blank" class="card thehive">🐝 TheHive</a>
         <a href="http://localhost:9006" target="_blank" class="card cortex">🧠 Cortex</a>
-        <a href="http://localhost:8043" target="_blank" class="card awx">🛠️ AWX</a>
+      </div>
+      <h2 class="section-title">Data Sources</h2>
+      <div class="links-grid">
+        <a href="http://localhost:9113/metrics" target="_blank" class="card nginx-exporter">🚦 Nginx Exporter</a>
+        <a href="http://localhost:2801" target="_blank" class="card falco">🦅 Falco</a>
+        <a href="http://localhost:6379" target="_blank" class="card redis">🟥 Redis</a>
+        <a href="http://localhost:3100" target="_blank" class="card loki">📜 Loki API</a>
+        <a href="http://localhost:9080" target="_blank" class="card promtail">🪵 Promtail</a>
+        <a href="http://localhost:5543/stub_status" target="_blank" class="card nginx-status">🔎 Nginx status</a>
+      </div>
+      <h2 class="section-title">Testing</h2>
+      <div class="links-grid">
+        <a href="http://localhost:6565" target="_blank" class="card k6">🧪 k6</a>
+        <a href="http://localhost:8089" target="_blank" class="card locust">🐛 Locust</a>
       </div>
       <h2 class="section-title">Observed Containers</h2>
       <div class="links-grid" id="observed-containers">
-        <a href="http://localhost:5543" target="_blank" class="card oceanhealing">🏥 OceanHealing App</a>
-        <!-- Add more observed containers here -->
+        <a href="http://localhost:5543" target="_blank" class="card oceanhealing">🏥 Ocean Healing</a>
       </div>
     </main>
     <footer>
-      <p>Secured by Falco & Tailscale (recommended)</p>
-      <p class="netdevs-credit">A NetDevs.net project</p>
+      <p>Accessible by Tailscale</p>
+      <p class="netdevs-credit">Built by <a href="https://NetDevs.net" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;">NetDevs.net</a></p>
     </footer>
   </div>
 </body>

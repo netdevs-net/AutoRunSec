@@ -1,5 +1,5 @@
 body {
-  background: #181f29;
+  background: #704394;
   color: #fff;
   font-family: 'Segoe UI', Arial, sans-serif;
   margin: 0;
@@ -58,10 +58,10 @@ header {
   border: 1.5px solid #2e5aef44;
 }
 .card:hover {
-  background: #2e5aef;
+  background: #A73A89;
   color: #fff;
   transform: translateY(-2px) scale(1.03);
-  box-shadow: 0 4px 16px #1fc8db44;
+  box-shadow: 0 4px 16px #A73A8944;
 }
 footer {
   text-align: center;
@@ -92,7 +92,54 @@ footer {
   .logo-placeholder {
     width: 80px;
     height: 80px;
-    font-size: 1rem;
+  }
+}
+
+.header-flex {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.netdevs-logo {
+  width: 96px;
+  height: 96px;
+  border-radius: 3px;
+  display: block;
+  object-fit: contain;
+}
+
+.header-titles {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  flex: 1;
+}
+
+.header-titles h1 {
+  margin: 0;
+  font-size: 2.2rem;
+  font-weight: 700;
+}
+
+.header-titles .subtitle {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #666;
+}
+
+@media (max-width: 600px) {
+  .header-flex {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+  .header-titles {
+    align-items: center;
   }
 }
 
