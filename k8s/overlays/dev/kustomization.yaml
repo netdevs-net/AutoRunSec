@@ -1,0 +1,30 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: ars-dev
+
+resources:
+  - ../../base
+
+patchesStrategicMerge:
+  - namespace-patch.yaml
+  # Add other dev-specific patches here
+
+nameSuffix: -dev
+
+# Development-specific configurations
+commonLabels:
+  environment: development
+
+# Development-specific resources
+resources:
+  - ../../infra/monitoring/dev
+  - ../../infra/logging/dev
+
+# Development-specific configurations
+configMapGenerator:
+  - name: ars-config
+    behavior: merge
+    literals:
+      - ENVIRONMENT=development
+      - LOG_LEVEL=debug

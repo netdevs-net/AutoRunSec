@@ -50,13 +50,15 @@ services:
   promtail:
     image: grafana/promtail:2.8.0
     container_name: promtail
+    ports:
+      - "9080:9080"
     volumes:
       - /var/log:/var/log
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
       - ./promtail-config.yml:/etc/promtail/promtail.yml
       - /var/run/docker.sock:/var/run/docker.sock
       - /tmp:/tmp
-    command: -config.file=/etc/promtail/promtail.yml
+    command: -config.file=/etc/promtail/promtail.yml -server.http-listen-port=9080
     depends_on:
       - loki
     restart: unless-stopped

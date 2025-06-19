@@ -1,0 +1,91 @@
+# Kubernetes aliases and functions
+
+# Main kubectl alias
+alias k=kubectl
+
+# Get commands
+alias kg="kubectl get"
+alias kga="kubectl get --all-namespaces"
+alias kgp="kubectl get pods"
+alias kgd="kubectl get deployment"
+alias kgs="kubectl get service"
+alias kgn="kubectl get nodes"
+alias kgns="kubectl get namespaces"
+alias kgall="kubectl get all --all-namespaces"
+
+# Describe commands
+alias kd="kubectl describe"
+alias kdp="kubectl describe pod"
+alias kdd="kubectl describe deployment"
+alias kds="kubectl describe service"
+
+# Logs
+alias kl="kubectl logs"
+alias klf="kubectl logs -f"
+alias kl1h="kubectl logs --since=1h"
+alias kl1m="kubectl logs --since=1m"
+
+# Apply/Delete
+alias kaf="kubectl apply -f"
+alias kdf="kubectl delete -f"
+alias kdelf="kubectl delete --grace-period=0 --force"
+
+# Exec
+alias ke="kubectl exec -it"
+
+# Port-forward
+alias kpf="kubectl port-forward"
+
+# Context and Namespace
+alias kcuc="kubectl config use-context"
+alias kccc="kubectl config current-context"
+alias kcdc="kubectl config delete-context"
+alias kcsc="kubectl config set-context"
+alias kcngc="kubectl config get-contexts"
+alias kns="kubectl config set-context --current --namespace"
+
+# Debugging
+alias kdebug="kubectl run -i --tty --rm debug --image=busybox --restart=Never -- sh"
+
+# Edit
+alias kev="kubectl edit"
+alias kevp="kubectl edit pod"
+alias kevd="kubectl edit deployment"
+
+# Rollout
+alias krrd="kubectl rollout restart deployment"
+alias krsd="kubectl rollout status deployment"
+
+# Top
+alias ktn="kubectl top node"
+alias ktp="kubectl top pod"
+
+# Completion
+[[ $commands[kubectl] ]] && source <(kubectl completion zsh)
+complete -F __start_kubectl k 2>/dev/null
+
+# Function to get pod shell
+function kshell() {
+    kubectl exec -it "$1" -- /bin/bash || kubectl exec -it "$1" -- /bin/sh
+}
+
+# Function to get pod by name pattern
+function kp() {
+    kubectl get pods | grep "$1" | head -1 | awk '{print $1}'
+}
+
+# Function to get logs from pods by pattern
+function klp() {
+    local pod=$(kubectl get pods | grep "$1" | head -1 | awk '{print $1}')
+    if [ -z "$pod" ]; then
+        echo "No pod found matching pattern: $1"
+        return 1
+    fi
+    echo "Logs for pod: $pod"
+    kubectl logs "$pod" "${@:2}"
+}
+
+# Function to watch pods with a specific pattern
+function kwp() {
+    watch -n 1 "kubectl get pods | grep \"$1\""
+}

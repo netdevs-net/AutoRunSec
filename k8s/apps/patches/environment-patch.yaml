@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ars-backend
+spec:
+  template:
+    spec:
+      containers:
+      - name: ars-backend
+        envFrom:
+        - configMapRef:
+            name: ars-environment
+        - secretRef:
+            name: ars-secrets
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ars-frontend
+spec:
+  template:
+    spec:
+      containers:
+      - name: ars-frontend
+        envFrom:
+        - configMapRef:
+            name: ars-environment
+        - secretRef:
+            name: ars-secrets

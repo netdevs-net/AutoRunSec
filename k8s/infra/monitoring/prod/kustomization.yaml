@@ -1,0 +1,57 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: monitoring
+
+resources:
+  - ../../base/monitoring
+
+# Production monitoring configurations
+configMapGenerator:
+  - name: prometheus-config
+    behavior: merge
+    files:
+      - prometheus.yml
+
+# High availability for production
+patches:
+  - target:
+      kind: Deployment
+      name: prometheus
+    patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 3
+      - op: add
+        path: /spec/template/spec/containers/0/resources
+        value:
+          limits:
+            cpu: "2"
+            memory: 4Gi
+          requests:
+            cpu: 500m
+            memory: 2Gi
+
+# Production alerting rules
+patches:
+  - target:
+      kind: PrometheusRule
+      name: ars-alerts
+    patch: |-
+      - op: add
+        path: /spec/groups/-
+        value:
+          name: production.rules
+          rules:
+            - alert: HighErrorRate
+              expr: |
+                sum(rate(http_requests_total{status=~"5.."}[5m])) by (service, namespace)
+                /
+                sum(rate(http_requests_total[5m])) by (service, namespace)
+                * 100 > 1
+              for: 5m
+              labels:
+                severity: critical
+              annotations:
+                summary: High error rate on {{ $labels.instance }}
+                description: "{{ $value }}% error rate for {{ $labels.service }}"
