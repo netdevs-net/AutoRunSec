@@ -7,9 +7,11 @@ resources:
   - namespace.yaml
   - nginx-ingress-controller.yaml
 
-commonLabels:
-  app.kubernetes.io/part-of: networking
-  app.kubernetes.io/managed-by: kustomize
+labels:
+  - includeSelectors: true
+    pairs:
+      app.kubernetes.io/part-of: networking
+      app.kubernetes.io/managed-by: kustomize
 
 images:
   - name: k8s.gcr.io/ingress-nginx/controller

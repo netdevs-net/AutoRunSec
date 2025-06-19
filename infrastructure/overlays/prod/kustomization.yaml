@@ -1,33 +1,39 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-namespace: ars-prod
-
 resources:
   - ../../base
 
+# Production-specific name suffix
+nameSuffix: -prod
+
+# Production-specific labels and annotations
+labels:
+  - includeSelectors: true
+    pairs:
+      environment: production
+      tier: production
+
+# Production-specific patches
 patchesStrategicMerge:
   - namespace-patch.yaml
   # Add other prod-specific patches here
 
-nameSuffix: -prod
-
-# Production-specific configurations
-commonLabels:
-  environment: production
-
-# Production-specific resources
-resources:
-  - ../../infra/monitoring/prod
-  - ../../infra/logging/prod
-
 # Production-specific configurations
 configMapGenerator:
-  - name: ars-config
+  - name: infrastructure-config
     behavior: merge
     literals:
       - ENVIRONMENT=production
       - LOG_LEVEL=info
+
+# Production-specific secret overrides
+secretGenerator:
+  - name: infrastructure-secrets
+    behavior: merge
+    literals:
+      - DB_PASSWORD=change-me-in-production
+      - API_KEY=change-me-in-production
 
 # Production-specific replicas
 replicas:

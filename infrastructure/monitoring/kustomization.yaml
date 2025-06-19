@@ -4,10 +4,34 @@ kind: Kustomization
 namespace: monitoring
 
 resources:
-  - namespace.yaml
+  - prometheus-pv.yaml
+  - prometheus-rbac.yaml
+  - prometheus-pvc.yaml
   - prometheus-config.yaml
   - prometheus-deployment.yaml
   - grafana-deployment.yaml
+
+patches:
+  - target:
+      kind: Service
+      name: prometheus
+    patch: |-
+      - op: replace
+        path: /spec/type
+        value: NodePort
+      - op: replace
+        path: /spec/ports/0/nodePort
+        value: 30909
+  - target:
+      kind: Service
+      name: grafana
+    patch: |-
+      - op: replace
+        path: /spec/type
+        value: NodePort
+      - op: replace
+        path: /spec/ports/0/nodePort
+        value: 30300
 
 commonLabels:
   app.kubernetes.io/part-of: monitoring
@@ -15,6 +39,8 @@ commonLabels:
 
 images:
   - name: prom/prometheus
+    newName: prom/prometheus
     newTag: latest
   - name: grafana/grafana
+    newName: grafana/grafana
     newTag: latest

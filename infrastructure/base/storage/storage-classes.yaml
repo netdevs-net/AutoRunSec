@@ -1,0 +1,37 @@
+# Default storage class
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: standard
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "true"
+provisioner: kubernetes.io/aws-ebs
+parameters:
+  type: gp3
+  fsType: ext4
+  iopsPerGB: "10"
+  encrypted: "true"
+---
+# Fast storage class for high-performance needs
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: fast
+provisioner: kubernetes.io/aws-ebs
+allowVolumeExpansion: true
+parameters:
+  type: io1
+  iopsPerGB: "50"
+  fsType: ext4
+  encrypted: "true"
+---
+# Cold storage class for infrequently accessed data
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: cold
+provisioner: kubernetes.io/aws-ebs
+parameters:
+  type: sc1
+  fsType: ext4
+  encrypted: "true"

@@ -8,9 +8,11 @@ resources:
   - falco-daemonset.yaml
   - falco-sidekick-deployment.yaml
 
-commonLabels:
-  app.kubernetes.io/part-of: security
-  app.kubernetes.io/managed-by: kustomize
+labels:
+  - includeSelectors: true
+    pairs:
+      app.kubernetes.io/part-of: security
+      app.kubernetes.io/managed-by: kustomize
 
 images:
   - name: falcosecurity/falco

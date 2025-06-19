@@ -5,14 +5,15 @@ kind: Kustomization
 resources:
   - ../../base
 
-# Development namespace
-namespace: ars-dev
+# Development-specific name suffix
 nameSuffix: -dev
 
 # Development-specific labels and annotations
-commonLabels:
-  environment: development
-  tier: development
+labels:
+  - includeSelectors: true
+    pairs:
+      environment: development
+      tier: development
 
 # Development-specific patches
 patches:
@@ -48,7 +49,7 @@ patches:
 
 # Development-specific configurations
 configMapGenerator:
-  - name: ars-config
+  - name: infrastructure-config
     behavior: merge
     literals:
       - ENVIRONMENT=development
@@ -57,7 +58,7 @@ configMapGenerator:
 
 # Development-specific secret overrides
 secretGenerator:
-  - name: ars-secrets
+  - name: infrastructure-secrets
     behavior: merge
     literals:
       - DB_PASSWORD=dev-password
