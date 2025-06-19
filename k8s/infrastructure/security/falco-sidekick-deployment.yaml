@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: falco-sidekick
+  namespace: security
+  labels:
+    app: falco-sidekick
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: falco-sidekick
+  template:
+    metadata:
+      labels:
+        app: falco-sidekick
+    spec:
+      containers:
+      - name: falco-sidekick
+        image: falcosecurity/falcosidekick:latest
+        args: ["--config=/etc/falcosidekick/config.yaml"]
+        ports:
+        - containerPort: 2801
+        volumeMounts:
+        - name: config
+          mountPath: /etc/falcosidekick
+      volumes:
+      - name: config
+        configMap:
+          name: falco-sidekick-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: falco-sidekick
+  namespace: security
+  labels:
+    app: falco-sidekick
+spec:
+  type: ClusterIP
+  ports:
+  - port: 2801
+    targetPort: 2801
+  selector:
+    app: falco-sidekick
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: falco-sidekick-config
+  namespace: security
+data:
+  config.yaml: |
+    debug: true
+    listenport: 2801
+    customfields:
+      environment: development
+      owner: security-team
+    webhook:
+      address: http://webhook.site/your-webhook-url
+      minimumpriority: warning
+      checkcert: true

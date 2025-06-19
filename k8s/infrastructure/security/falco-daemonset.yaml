@@ -1,0 +1,139 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: falco
+  namespace: security
+  labels:
+    app: falco
+spec:
+  selector:
+    matchLabels:
+      app: falco
+  template:
+    metadata:
+      labels:
+        app: falco
+      annotations:
+        container.apparmor.security.beta.kubernetes.io/falco: unconfined
+    spec:
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      containers:
+      - name: falco
+        image: falcosecurity/falco:latest
+        imagePullPolicy: Always
+        securityContext:
+          privileged: true
+          allowPrivilegeEscalation: true
+          capabilities:
+            add:
+              - SYS_PTRACE
+              - SYS_ADMIN
+              - SYSLOG
+        volumeMounts:
+        - name: dev-fs
+          mountPath: /host/dev
+          readOnly: true
+        - name: proc-fs
+          mountPath: /host/proc
+          readOnly: true
+        - name: boot-fs
+          mountPath: /host/boot
+          readOnly: true
+        - name: lib-modules
+          mountPath: /host/lib/modules
+          readOnly: true
+        - name: usr-src
+          mountPath: /host/usr/src
+          readOnly: true
+        - name: etc-falco
+          mountPath: /etc/falco
+        - name: falco-bpf
+          mountPath: /root/.falco
+      volumes:
+      - name: dev-fs
+        hostPath:
+          path: /dev
+      - name: proc-fs
+        hostPath:
+          path: /proc
+      - name: boot-fs
+        hostPath:
+          path: /boot
+      - name: lib-modules
+        hostPath:
+          path: /lib/modules
+      - name: usr-src
+        hostPath:
+          path: /usr/src
+      - name: etc-falco
+        configMap:
+          name: falco-config
+      - name: falco-bpf
+        emptyDir: {}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: falco-config
+  namespace: security
+data:
+  falco.yaml: |
+    # File containing the rules for the Falco engine
+    rules_file: /etc/falco/falco_rules.yaml
+    
+    # Whether to output events in JSON or text
+    json_output: true
+    
+    # Send events to this URL
+    http_output:
+      enabled: true
+      url: "http://falco-sidekick:2801"
+    
+    # Log to standard error
+    log_stderr: true
+    
+    # Log to syslog
+    log_syslog: false
+    
+    # Log to file
+    log_file: "/var/log/falco.log"
+    
+    # Log level (info, notice, warning, error, critical, alert, emergency, debug)
+    log_level: info
+    
+    # Time in milliseconds for the falco output queue
+    output_timeout: 2000
+    
+    # Whether to buffer events in output
+    buffered_outputs: false
+    
+    # Whether to output events with relative or absolute time
+    time_format_iso_8601: false
+    
+    # Whether to include the rule name in the output
+    output_extra:
+      rule: true
+      tags: true
+      source: true
+      output: true
+    
+    # Whether to enable the gRPC server
+    grpc:
+      enabled: false
+    
+    # Whether to enable the gRPC output
+    grpc_output:
+      enabled: false
+    
+    # Whether to enable the webserver
+    webserver:
+      enabled: false
+    
+    # Whether to enable the file output
+    file_output:
+      enabled: false
+    
+    # Whether to enable the program output
+    program_output:
+      enabled: false

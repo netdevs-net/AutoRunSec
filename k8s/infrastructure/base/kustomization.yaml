@@ -1,0 +1,27 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Base resources that are common across all environments
+resources:
+  - namespace.yaml
+  - storage/storage-classes.yaml
+  - networking/network-policies.yaml
+  - security/rbac.yaml
+
+# Common configurations
+commonLabels:
+  app.kubernetes.io/part-of: infrastructure
+  app.kubernetes.io/managed-by: kustomize
+  environment: base
+
+# Add common environment variables to all resources
+configMapGenerator:
+  - name: infrastructure-config
+    literals:
+      - ENVIRONMENT=base
+      - LOG_LEVEL=info
+
+# Common annotations for all resources
+commonAnnotations:
+  description: "Base infrastructure configuration"
+  kustomize.toolkit.fluxcd.io/checksum: 5a9f9d6c13d11609bdf5d6a7d15c1f9f2e4eb4bd5b8f0755ac56961f61335859

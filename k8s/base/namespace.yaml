@@ -1,7 +1,40 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: monitoring
+  labels:
+    name: monitoring
+    environment: base
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: storage
+  labels:
+    name: storage
+    environment: base
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: security
+  labels:
+    name: security
+    environment: base
+---
 apiVersion: v1
 kind: Namespace
 metadata:
   name: ars
   labels:
     name: ars
+    environment: base
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: networking
+  labels:
+    name: networking
     environment: base

@@ -1,0 +1,144 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Base resources from infrastructure
+resources:
+  - ../../base
+  - ../../monitoring
+  - ../../logging
+  - ../../storage
+  - ../../security
+  - ../../networking
+
+# Production namespace
+namespace: ars-prod
+
+# Common labels for all resources in production
+commonLabels:
+  environment: production
+  tier: production
+  app.kubernetes.io/environment: production
+
+# Production-specific patches
+patches:
+  # Patch Prometheus for production
+  - target:
+      kind: Deployment
+      name: prometheus
+    patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 2
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/limits/memory
+        value: "4Gi"
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/requests/memory
+        value: "2Gi"
+      - op: add
+        path: /spec/template/spec/affinity
+        value:
+          podAntiAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - prometheus
+              topologyKey: kubernetes.io/hostname
+
+  # Patch Grafana for production
+  - target:
+      kind: Deployment
+      name: grafana
+    patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 2
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/limits/memory
+        value: "2Gi"
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/requests/memory
+        value: "1Gi"
+      - op: add
+        path: /spec/template/spec/affinity
+        value:
+          podAntiAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                    - grafana
+                topologyKey: kubernetes.io/hostname
+
+  # Patch MinIO for production
+  - target:
+      kind: Deployment
+      name: minio
+    patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 4
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/limits/memory
+        value: "4Gi"
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/requests/memory
+        value: "2Gi"
+      - op: add
+        path: /spec/template/spec/affinity
+        value:
+          podAntiAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - minio
+              topologyKey: kubernetes.io/hostname
+
+  # Production alerting rules
+  - target:
+      kind: PrometheusRule
+      name: ars-alerts
+    patch: |-
+      - op: add
+        path: /spec/groups/-
+        value:
+          name: production.rules
+          rules:
+            - alert: HighErrorRate
+              expr: |
+                sum(rate(http_requests_total{status=~"5.."}[5m])) by (service, namespace)
+                /
+                sum(rate(http_requests_total[5m])) by (service, namespace)
+                * 100 > 1
+              for: 5m
+              labels:
+                severity: critical
+              annotations:
+                summary: High error rate on {{ $labels.instance }}
+                description: "{{ $value }}% error rate for {{ $labels.service }}"
+
+# Production-specific environment variables
+configMapGenerator:
+  - name: infrastructure-config
+    behavior: merge
+    literals:
+      - ENVIRONMENT=production
+      - LOG_LEVEL=info
+
+# Production secrets (in a real environment, use sealed-secrets or similar)
+secretGenerator:
+  - name: infrastructure-secrets
+    behavior: merge
+    literals:
+      - DB_PASSWORD=change-me-in-production
+      - API_KEY=change-me-in-production

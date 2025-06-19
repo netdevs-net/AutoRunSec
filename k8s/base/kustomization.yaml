@@ -1,16 +1,58 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-namespace: ars
+# Include all namespaces
 resources:
   - namespace.yaml
-  # Add other base resources here
 
 # Common labels to be added to all resources
 commonLabels:
   app.kubernetes.io/managed-by: kustomize
   app.kubernetes.io/part-of: ars
+  environment: base
 
 # Common annotations to be added to all resources
 commonAnnotations:
   description: "AutoRunSec Base Configuration"
+  kustomize.toolkit.fluxcd.io/checksum: 5a9f9d6c13d11609bdf5d6a7d15c1f9f2e4eb4bd5b8f0755ac56961f61335859
+  
+# Name prefix for all resources
+namePrefix: ars-
+
+# Name suffix for all resources
+nameSuffix: ""
+
+# Set the namespace for all resources
+namespace: ars
+
+# Add common environment variables to all resources
+configMapGenerator:
+  - name: ars-config
+    literals:
+      - ENVIRONMENT=base
+      - LOG_LEVEL=info
+
+# Add common secret environment variables
+secretGenerator:
+  - name: ars-secrets
+    type: Opaque
+    literals:
+      - DB_PASSWORD=change-me
+      - API_KEY=change-me
+
+# Add common variables for substitution
+vars:
+  - name: NAMESPACE
+    objref:
+      kind: Namespace
+      name: ars
+      apiVersion: v1
+    fieldref:
+      fieldpath: metadata.name
+  - name: APP_NAME
+    objref:
+      kind: ConfigMap
+      name: ars-config
+      apiVersion: v1
+    fieldref:
+      fieldpath: metadata.name

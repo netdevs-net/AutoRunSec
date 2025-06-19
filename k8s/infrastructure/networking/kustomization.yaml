@@ -1,0 +1,17 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: networking
+
+resources:
+  - namespace.yaml
+  - nginx-ingress-controller.yaml
+
+commonLabels:
+  app.kubernetes.io/part-of: networking
+  app.kubernetes.io/managed-by: kustomize
+
+images:
+  - name: k8s.gcr.io/ingress-nginx/controller
+    newTag: v1.2.0
+    digest: sha256:d8196fb3dcadaeeb2c6bf0a05028284b937543ad29f1aa66c9c428770272dd54
