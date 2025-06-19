@@ -4,7 +4,8 @@ kind: Namespace
 metadata:
   name: monitoring
   labels:
-    name: monitoring
+    app.kubernetes.io/name: monitoring
+    app.kubernetes.io/part-of: ars
     environment: base
 ---
 apiVersion: v1
@@ -12,7 +13,8 @@ kind: Namespace
 metadata:
   name: storage
   labels:
-    name: storage
+    app.kubernetes.io/name: storage
+    app.kubernetes.io/part-of: ars
     environment: base
 ---
 apiVersion: v1
@@ -20,7 +22,8 @@ kind: Namespace
 metadata:
   name: security
   labels:
-    name: security
+    app.kubernetes.io/name: security
+    app.kubernetes.io/part-of: ars
     environment: base
 ---
 apiVersion: v1
@@ -28,7 +31,8 @@ kind: Namespace
 metadata:
   name: ars
   labels:
-    name: ars
+    app.kubernetes.io/name: ars
+    app.kubernetes.io/part-of: ars
     environment: base
 ---
 apiVersion: v1
@@ -36,5 +40,6 @@ kind: Namespace
 metadata:
   name: networking
   labels:
-    name: networking
+    app.kubernetes.io/name: networking
+    app.kubernetes.io/part-of: ars
     environment: base

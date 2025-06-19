@@ -1,21 +1,17 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-# Base resources from infrastructure
+# Base resources
 resources:
   - ../../base
-  - ../../monitoring
-  - ../../logging
-  - ../../storage
-  - ../../security
-  - ../../networking
 
-# Development-specific configurations
+# Development namespace
 namespace: ars-dev
+nameSuffix: -dev
 
-# Common labels for all resources in dev
+# Development-specific labels and annotations
 commonLabels:
-  environment: dev
+  environment: development
   tier: development
 
 # Development-specific patches
@@ -30,10 +26,10 @@ patches:
         value: 1
       - op: replace
         path: /spec/template/spec/containers/0/resources/limits/memory
-        value: "512Mi"
+        value: "1Gi"
       - op: replace
         path: /spec/template/spec/containers/0/resources/requests/memory
-        value: "256Mi"
+        value: "512Mi"
 
   # Patch Grafana for development
   - target:
@@ -50,33 +46,19 @@ patches:
         path: /spec/template/spec/containers/0/resources/requests/memory
         value: "256Mi"
 
-  # Patch MinIO for development
-  - target:
-      kind: Deployment
-      name: minio
-    patch: |-
-      - op: replace
-        path: /spec/replicas
-        value: 1
-      - op: replace
-        path: /spec/template/spec/containers/0/resources/limits/memory
-        value: "1Gi"
-      - op: replace
-        path: /spec/template/spec/containers/0/resources/requests/memory
-        value: "512Mi"
-
-# Development-specific environment variables
+# Development-specific configurations
 configMapGenerator:
-  - name: infrastructure-config
+  - name: ars-config
     behavior: merge
     literals:
-      - ENVIRONMENT=dev
+      - ENVIRONMENT=development
       - LOG_LEVEL=debug
+      - FEATURE_FLAG_DEV_MODE=true
 
-# Development-specific secrets (in a real environment, use sealed-secrets or similar)
+# Development-specific secret overrides
 secretGenerator:
-  - name: infrastructure-secrets
+  - name: ars-secrets
     behavior: merge
     literals:
       - DB_PASSWORD=dev-password
-      - API_KEY=dev-api-key-123
+      - API_KEY=dev-api-key

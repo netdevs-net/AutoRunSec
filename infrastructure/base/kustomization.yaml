@@ -1,9 +1,14 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-# Include all namespaces
+# Include all namespaces and components
 resources:
   - namespace.yaml
+  - ../monitoring
+  - ../logging
+  - ../storage
+  - ../security
+  - ../networking
 
 # Common labels to be added to all resources
 commonLabels:
@@ -22,9 +27,6 @@ namePrefix: ars-
 # Name suffix for all resources
 nameSuffix: ""
 
-# Set the namespace for all resources
-namespace: ars
-
 # Add common environment variables to all resources
 configMapGenerator:
   - name: ars-config
@@ -39,20 +41,3 @@ secretGenerator:
     literals:
       - DB_PASSWORD=change-me
       - API_KEY=change-me
-
-# Add common variables for substitution
-vars:
-  - name: NAMESPACE
-    objref:
-      kind: Namespace
-      name: ars
-      apiVersion: v1
-    fieldref:
-      fieldpath: metadata.name
-  - name: APP_NAME
-    objref:
-      kind: ConfigMap
-      name: ars-config
-      apiVersion: v1
-    fieldref:
-      fieldpath: metadata.name
