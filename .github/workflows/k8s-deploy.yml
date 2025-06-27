@@ -1,0 +1,49 @@
+name: Kubernetes Deployment
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'infrastructure/**'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up dependencies
+      run: |
+        sudo apt-get install -y jq
+        wget https://github.com/open-policy-agent/conftest/releases/download/v0.45.0/conftest_0.45.0_Linux_x86_64.tar.gz
+        tar xzf conftest_0.45.0_Linux_x86_64.tar.gz
+        sudo mv conftest /usr/local/bin
+        
+    - name: Validate Kustomize
+      run: |
+        cd infrastructure
+        kustomize build overlays/test | conftest test -p policies/ -
+        kustomize build overlays/dev | conftest test -p policies/ -
+        kustomize build overlays/prod | conftest test -p policies/ -
+        
+        kustomize build overlays/test | kubeval --strict
+        kustomize build overlays/dev | kubeval --strict
+        kustomize build overlays/prod | kubeval --strict
+        
+        ./scripts/validate-resources.sh overlays/test
+
+  deploy-dev:
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up kubectl
+      uses: azure/setup-kubectl@v3
+      
+    - name: Deploy to Dev
+      run: |
+        cd infrastructure
+        kustomize build overlays/dev | kubectl apply -f -
+        ./scripts/validate-resources.sh overlays/dev

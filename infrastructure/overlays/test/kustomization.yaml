@@ -1,0 +1,25 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../base
+
+components:
+  - ../../components/validation
+
+# Test-specific configurations
+nameSuffix: -test
+
+# Test-specific labels
+labels:
+  - includeSelectors: true
+    pairs:
+      environment: test
+
+# Test resource patches
+patches:
+  - target:
+      kind: Deployment
+      name: prometheus
+      namespace: ars
+    path: test-resource-limits.yaml

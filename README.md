@@ -1,126 +1,52 @@
-# Construction InfraSec Homelab Environment
+# Conftest
 
-This repository contains a secure, production-grade homelab environment managed with Docker Compose. It includes runtime security hardening using Falco for container behavior monitoring, and is ready for playbook integration with TheHive for automated incident response.
+[![Go Report Card](https://goreportcard.com/badge/open-policy-agent/opa)](https://goreportcard.com/report/open-policy-agent/conftest) [![Netlify](https://api.netlify.com/api/v1/badges/2d928746-3380-4123-b0eb-1fd74ba390db/deploy-status)](https://app.netlify.com/sites/vibrant-villani-65041c/deploys)
 
----
+Conftest helps you write tests against structured configuration data. Using Conftest you can
+write tests for your Kubernetes configuration, Tekton pipeline definitions, Terraform code,
+Serverless configs or any other config files.
 
-## 🚀 Services Overview
+Conftest uses the Rego language from [Open Policy Agent](https://www.openpolicyagent.org/) for writing
+the assertions. You can read more about Rego in [How do I write policies](https://www.openpolicyagent.org/docs/how-do-i-write-policies.html)
+in the Open Policy Agent documentation.
 
-| Service           | URL                                 | Default Credentials     | Description |
-|-------------------|-------------------------------------|------------------------|-------------|
-| OceanHealing App  | http://localhost:5543               | N/A                    | Main application |
-| Prometheus        | http://localhost:9090               | N/A                    | Metrics & monitoring |
-| Grafana           | http://localhost:3000               | admin / admin123       | Dashboards & visualization |
-| Nginx Exporter    | http://localhost:9113/metrics       | N/A                    | Nginx metrics exporter |
-| MinIO Console     | http://localhost:9001               | admin / admin123       | S3-compatible storage |
-| Loki API          | http://localhost:3100               | N/A                    | Log aggregation |
-| TheHive           | http://localhost:9005               | admin / secret         | Incident response platform |
-| Cortex            | http://localhost:9006               | N/A                    | Automated analysis |
-| AWX               | http://localhost:8043               | admin / password       | Ansible automation & orchestration |
-| Falco             | N/A (logs to stdout/file)           | N/A                    | Container runtime security |
+Here's a quick example. Save the following as `policy/deployment.rego`:
 
----
+```rego
+package main
 
-## 🔒 Security Hardening
+deny[msg] {
+  input.kind == "Deployment"
+  not input.spec.template.spec.securityContext.runAsNonRoot
 
-### OceanHealing App (and recommended for all services)
-- **No new privileges:** Prevents privilege escalation.
-- **Seccomp profile:** Uses Docker's default syscall filter.
-- **Capabilities dropped:** Drops all Linux capabilities.
-- **Read-only filesystem:** Prevents writes except for explicitly mounted volumes.
-- **Non-root user:** Runs as UID 1000 (ensure this user exists in your image).
+  msg := "Containers must not run as root"
+}
 
-### Falco: Runtime Behavior Analysis
-- Monitors syscalls and container activity for suspicious behavior.
-- Ships with a comprehensive default rule set.
-- Can be extended with custom rules.
+deny[msg] {
+  input.kind == "Deployment"
+  not input.spec.selector.matchLabels.app
 
----
-
-## 🛡️ Falco Quickstart & Tuning
-
-1. **View Falco alerts:**
-   ```bash
-   docker logs falco
-   ```
-2. **Tune rules:**
-   - Copy `/etc/falco/falco_rules.yaml` from the Falco container.
-   - Edit/add rules as needed (see [Falco rule docs](https://falco.org/docs/rules/)).
-   - Mount your custom rules file into the container:
-     ```yaml
-     volumes:
-       - ./falco_rules.yaml:/etc/falco/falco_rules.local.yaml:ro
-     ```
-
-### Example: Allow benign DNS lookups
-```yaml
-- rule: Allow benign DNS
-  desc: Allow DNS lookups by containers
-  condition: evt.type in ("sendto") and fd.sip.name = "8.8.8.8"
-  output: "Allowed DNS lookup (container=%container.name user=%user.name)"
-  priority: INFO
-  enabled: true
+  msg := "Containers must provide app label for pod selectors"
+}
 ```
 
----
+Assuming you have a Kubernetes deployment in `deployment.yaml` you can run Conftest like so:
 
-## 🔗 Integrating Falco with TheHive (Incident Response)
+```console
+$ conftest test deployment.yaml
+FAIL - deployment.yaml - Containers must not run as root
+FAIL - deployment.yaml - Containers must provide app label for pod selectors
 
-1. **Configure Falco Webhook Output:**
-   - Add to `command:` in `docker-compose.yml` (or use env var):
-     ```yaml
-     command: >
-       falco --cri /host/var/run/docker.sock --webhook-url http://thehive:9005/api/alert
-     ```
-   - Or use [Falcosidekick](https://github.com/falcosecurity/falcosidekick) for advanced integrations.
+2 tests, 0 passed, 0 warnings, 2 failures, 0 exceptions
+```
 
-2. **Configure TheHive to receive alerts:**
-   - See [TheHive API docs](https://docs.thehive-project.org/).
-   - You may need to configure an API key and adjust the webhook payload.
+Conftest isn't specific to Kubernetes. It will happily let you write tests for any configuration files in a variety of different formats. See the [documentation](https://www.conftest.dev/) for [installation instructions](https://www.conftest.dev/install/) and
+more details about the features.
 
----
+## Want to contribute to Conftest?
 
-## 📝 Operational Tips
+* See [DEVELOPMENT.md](DEVELOPMENT.md) to build and test Conftest itself.
+* See [CONTRIBUTING.md](CONTRIBUTING.md) to get started.
 
-- **Start the lab:**
-  ```bash
-  docker compose up -d
-  ```
-- **Stop the lab:**
-  ```bash
-  docker compose down
-  ```
-- **View Falco logs:**
-  ```bash
-  docker logs -f falco
-  ```
-- **Update Falco rules:**
-  - Edit your custom rules file and restart the Falco container.
-
----
-
-## 📂 Project Structure
-
-- `docker-compose.yml` — Main Compose file, includes all services and security configuration.
-- `README.md` — This documentation.
-- `falco_rules.yaml` — (Optional) Custom Falco rules.
-
----
-
-## 🛠️ Extending Security
-- Apply similar security options to all containers.
-- Use AppArmor/SELinux profiles for even finer control.
-- Regularly review Falco and Docker logs for anomalies.
-- Integrate with SIEM or alerting systems for production use.
-
----
-
-## 📚 References
-- [Falco Documentation](https://falco.org/docs/)
-- [Docker Security Best Practices](https://docs.docker.com/engine/security/)
-- [TheHive Project](https://thehive-project.org/)
-- [Falcosidekick](https://github.com/falcosecurity/falcosidekick)
-
----
-
-For questions or contributions, open an issue or PR.
+For discussions and questions join us on the [Open Policy Agent Slack](https://slack.openpolicyagent.org/)
+in the `#opa-conftest` channel.

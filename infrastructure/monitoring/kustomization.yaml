@@ -33,9 +33,11 @@ patches:
         path: /spec/ports/0/nodePort
         value: 30300
 
-commonLabels:
-  app.kubernetes.io/part-of: monitoring
-  app.kubernetes.io/managed-by: kustomize
+labels:
+  - includeSelectors: true
+    pairs:
+      app.kubernetes.io/part-of: monitoring
+      app.kubernetes.io/managed-by: kustomize
 
 images:
   - name: prom/prometheus

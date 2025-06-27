@@ -2,8 +2,13 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 # Base resources
-resources:
+bases:
   - ../../base
+
+# Minikube-specific resources
+resources:
+  - monitoring/prometheus-pv.yaml
+  - monitoring/prometheus-pvc.yaml
 
 # Development-specific name suffix
 nameSuffix: -dev

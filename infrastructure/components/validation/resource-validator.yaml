@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: resource-validator
+spec:
+  selector:
+    matchLabels:
+      app: resource-validator
+  template:
+    metadata:
+      labels:
+        app: resource-validator
+    spec:
+      containers:
+      - name: validator
+        image: alpine
+        command: ["echo", "Validation complete"]
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 256Mi
