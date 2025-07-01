@@ -12,6 +12,8 @@ spec:
       labels:
         app: oceanhealing
     spec:
+      imagePullSecrets:
+        - name: ghcr-creds
       containers:
         - name: oceanhealing
           image: ghcr.io/webdevs-net/oceanhealing:latest

@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-scrapeconfig-nginx-exporter
+  namespace: {{ .Values.namespace }}
+data:
+  prometheus-additional.yaml: |
+    scrape_configs:
+      - job_name: 'nginx-exporter'
+        static_configs:
+          - targets: ['nginx-exporter:9113']

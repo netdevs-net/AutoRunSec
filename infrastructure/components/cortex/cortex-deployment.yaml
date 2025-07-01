@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cortex
+  namespace: ars
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cortex
+  template:
+    metadata:
+      labels:
+        app: cortex
+    spec:
+      containers:
+      - name: cortex
+        image: thehiveproject/cortex:3.1
+        env:
+        - name: JOB_DIRECTORY
+          value: /tmp
+        - name: CORTEX_ELASTICSEARCH_URL
+          value: http://elasticsearch:9200
+        ports:
+        - containerPort: 9001
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cortex
+  namespace: ars
+spec:
+  selector:
+    app: cortex
+  ports:
+    - protocol: TCP
+      port: 9001
+      targetPort: 9001
+  type: ClusterIP

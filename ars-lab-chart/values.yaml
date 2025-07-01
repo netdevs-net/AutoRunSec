@@ -1,0 +1,13 @@
+namespace: ars
+loki:
+  enabled: true
+promtail:
+  enabled: true
+grafana:
+  enabled: true
+elasticsearch:
+  enabled: true
+thehive:
+  enabled: true
+cortex:
+  enabled: true

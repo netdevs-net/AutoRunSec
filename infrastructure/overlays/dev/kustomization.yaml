@@ -6,6 +6,7 @@ namespace: ars
 resources:
   - ../../base
   - ../../components/oceanhealing
+  - ghcr-creds.yaml
 
 # Development-specific name suffix
 nameSuffix: -dev

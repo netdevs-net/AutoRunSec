@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ghcr-creds
+  namespace: ars
+type: kubernetes.io/dockerconfigjson
+data:
+  .dockerconfigjson: eyJhdXRocyI6eyJnaGNyLmlvIjp7InVzZXJuYW1lIjoid2ViZGV2cy1uZXQiLCJwYXNzd29yZCI6ImdocF9GZTRnWE5JbnE2MXAxWjcyUUk2bVpCbnRzN3dkRnIxZ0d3ODAiLCJlbWFpbCI6InJ5YW5AbmV0ZGV2cy5uZXQiLCJhdXRoIjoiZDJWaVpHVjJjeTF1WlhRNloyaHdYMFpsTkdkWVRrbHVjVFl4Y0RGYU56SlJTVFp0V2tKdWRITTNkMlJHY2pGblIzYzRNQT09In19fQ==

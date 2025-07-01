@@ -110,10 +110,3 @@ kubectl apply -k infrastructure/overlays/dev/
 
 ## Questions?
 If you have questions about the stack, observability, or how to extend the cluster, open an issue or contact the maintainers.
-
-deny[msg] {
-  input.kind == "Deployment"
-  not input.spec.selector.matchLabels.app
-
-  msg := "Containers must provide app label for pod selectors"
-}

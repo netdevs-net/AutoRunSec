@@ -1,0 +1,24 @@
+---
+- name: Deploy ARS Lab Kubernetes Stack
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    kube_namespace: ars
+    helm_release: ars-lab
+    helm_chart_path: "{{ playbook_dir }}/../ars-lab-chart"
+  tasks:
+    - name: Ensure ars namespace exists
+      kubernetes.core.k8s:
+        api_version: v1
+        kind: Namespace
+        name: "{{ kube_namespace }}"
+        state: present
+
+    - name: Deploy ARS Lab Helm chart
+      community.kubernetes.helm:
+        name: "{{ helm_release }}"
+        chart_path: "{{ helm_chart_path }}"
+        release_namespace: "{{ kube_namespace }}"
+        create_namespace: true
+        state: present

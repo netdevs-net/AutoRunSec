@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: promtail
-  namespace: logging
+  namespace: ars
   labels:
     app: promtail
 spec:
@@ -43,4 +43,4 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: promtail
-  namespace: logging
+  namespace: ars
