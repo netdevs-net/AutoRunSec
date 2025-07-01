@@ -1,0 +1,12 @@
+# Kubernetes and app secrets
+*.secret.yaml
+secrets.yaml
+.env
+.env.*
+infrastructure/overlays/dev/ghcr-creds.yaml
+# Ignore gitleaks reports and binaries
+ gitleaks*
+# Ignore clean-creds script
+ clean-creds*
+# Ignore example placeholder secrets
+!*.example.yaml
