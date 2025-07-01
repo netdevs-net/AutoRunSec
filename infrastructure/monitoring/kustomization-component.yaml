@@ -8,7 +8,6 @@ resources:
   - prometheus-rbac.yaml
   - prometheus-pvc.yaml
   - prometheus-config.yaml
-  - prometheus-deployment.yaml
   - grafana-deployment.yaml
 
 labels:

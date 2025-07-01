@@ -1,12 +1,11 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+namespace: ars
 
 # Base resources
-bases:
-  - ../../base
-
-# Minikube-specific resources
 resources:
+  - ../../base
+  - ../../components/oceanhealing
   - monitoring/prometheus-pv.yaml
   - monitoring/prometheus-pvc.yaml
 
@@ -22,21 +21,6 @@ labels:
 
 # Development-specific patches
 patches:
-  # Patch Prometheus for development
-  - target:
-      kind: Deployment
-      name: prometheus
-    patch: |-
-      - op: replace
-        path: /spec/replicas
-        value: 1
-      - op: replace
-        path: /spec/template/spec/containers/0/resources/limits/memory
-        value: "1Gi"
-      - op: replace
-        path: /spec/template/spec/containers/0/resources/requests/memory
-        value: "512Mi"
-
   # Patch Grafana for development
   - target:
       kind: Deployment
@@ -51,6 +35,9 @@ patches:
       - op: replace
         path: /spec/template/spec/containers/0/resources/requests/memory
         value: "256Mi"
+
+  # Patch Prometheus Service NodePort
+  - path: monitoring/prometheus-service-nodeport-patch.yaml
 
 # Development-specific configurations
 configMapGenerator:

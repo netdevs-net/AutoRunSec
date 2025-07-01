@@ -28,8 +28,10 @@ if [[ "$MODE" == "compose" ]]; then
       echo "❌ docker-compose not found. Please install Docker Compose."
       exit 1
   fi
-  docker-compose pull
-  docker compose -f frontend.yml up -d
+  docker compose -f docker/docker-compose.yml pull
+  docker compose -f docker/docker-compose.yml up -d
+  docker compose -f docker/frontend.yml pull
+  docker compose -f docker/frontend.yml up -d
   sleep 5
   echo "✅ LAB BOOTSTRAP COMPLETE"
   echo ""

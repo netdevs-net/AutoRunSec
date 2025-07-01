@@ -1,5 +1,5 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: prometheus
   namespace: ars
@@ -7,7 +7,8 @@ metadata:
     app: prometheus
     component: server
 spec:
-  replicas: 1
+  serviceName: prometheus
+  replicas: 1 # Only one Prometheus pod for the node
   selector:
     matchLabels:
       app: prometheus
@@ -67,9 +68,15 @@ spec:
       - name: config
         configMap:
           name: prometheus-config
-      - name: prometheus-storage
-        persistentVolumeClaim:
-          claimName: prometheus-storage
+  volumeClaimTemplates:
+  - metadata:
+      name: prometheus-storage
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi
+# Only one PVC will be created due to replicas: 1
 ---
 apiVersion: v1
 kind: Service
@@ -84,7 +91,6 @@ spec:
   ports:
   - port: 9090
     targetPort: 9090
-    nodePort: 30090
   selector:
     app: prometheus
     component: server
