@@ -4,8 +4,10 @@ namespace: ars
 
 # Base resources
 resources:
+  - frontend/frontend-deployment.yaml
+  - frontend/frontend-ingress.yaml
   - ../../base
-  - ../../components/oceanhealing
+  - oceanhealing/oceanhealing-dev-deployment.yaml
   - ghcr-creds.yaml
 
 # Development-specific name suffix

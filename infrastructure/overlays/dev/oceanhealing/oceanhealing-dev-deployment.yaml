@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oceanhealing-dev
+  namespace: ars
+  labels:
+    environment: development
+    tier: development
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: oceanhealing
+      environment: development
+      tier: development
+  template:
+    metadata:
+      labels:
+        app: oceanhealing
+        environment: development
+        tier: development
+    spec:
+      imagePullSecrets:
+        - name: ghcr-creds-dev
+      containers:
+        - name: oceanhealing
+          image: ghcr.io/webdevs-net/oceanhealing:latest
+          ports:
+            - containerPort: 5543
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5543
+            initialDelaySeconds: 10
+            periodSeconds: 5

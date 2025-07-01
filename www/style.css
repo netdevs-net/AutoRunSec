@@ -1,3 +1,16 @@
+.status-circle {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 6px;
+  background-color: grey;
+  vertical-align: middle;
+  box-shadow: 0 0 2px #0002;
+}
+.status-circle.up { background-color: #2ecc40; }
+.status-circle.down { background-color: #ff4136; }
+
 body {
   background: #704394;
   color: #fff;

@@ -9,7 +9,7 @@
 <body>
   <div class="container">
     <header class="header-flex">
-      <img src="/logos/netdevs-logo.jpg" alt="NetDevs Logo" class="netdevs-logo" />
+      <img src="logos/netdevs-logo.jpg" alt="NetDevs Logo" class="netdevs-logo" />
       <div class="header-titles">
         <h1>Homelab Admin Portal</h1>
         <p class="subtitle">Central access to all your services</p>
@@ -18,34 +18,34 @@
     <main>
       <h2 class="section-title">Observability</h2>
       <div class="links-grid">
-        <a href="http://localhost:9090" target="_blank" class="card prometheus">📊 Prometheus</a>
-        <a href="http://localhost:3000" target="_blank" class="card grafana">📈 Grafana</a>
-        <a href="http://localhost:9001" target="_blank" class="card minio">🛢️ MinIO Console</a>
-        <a href="http://localhost:9200" target="_blank" class="card elasticsearch">🗄️ Elasticsearch</a>
+        <a href="http://localhost:9090" target="_blank" class="card prometheus"><span class="status-circle" id="status-prometheus"></span>📊 Prometheus</a>
+        <a href="http://localhost:3000" target="_blank" class="card grafana"><span class="status-circle" id="status-grafana"></span>📈 Grafana</a>
+        <a href="http://localhost:9001" target="_blank" class="card minio"><span class="status-circle" id="status-minio"></span>🛢️ MinIO Console</a>
+        <a href="http://localhost:9200" target="_blank" class="card elasticsearch"><span class="status-circle" id="status-elasticsearch"></span>🗄️ Elasticsearch</a>
       </div>
 
       <h2 class="section-title">Automated Response Security</h2>
       <div class="links-grid">
-        <a href="http://localhost:9005" target="_blank" class="card thehive">🐝 TheHive</a>
-        <a href="http://localhost:9006" target="_blank" class="card cortex">🧠 Cortex</a>
+        <a href="http://localhost:9005" target="_blank" class="card thehive"><span class="status-circle" id="status-thehive"></span>🐝 TheHive</a>
+        <a href="http://localhost:9006" target="_blank" class="card cortex"><span class="status-circle" id="status-cortex"></span>🧠 Cortex</a>
       </div>
       <h2 class="section-title">Data Sources</h2>
       <div class="links-grid">
-        <a href="http://localhost:9113/metrics" target="_blank" class="card nginx-exporter">🚦 Nginx Exporter</a>
-        <a href="http://localhost:2801" target="_blank" class="card falco">🦅 Falco</a>
-        <a href="http://localhost:6379" target="_blank" class="card redis">🟥 Redis</a>
-        <a href="http://localhost:3100/metrics" target="_blank" class="card loki">📜 Loki API</a>
-        <a href="http://localhost:9080" target="_blank" class="card promtail">🪵 Promtail</a>
-        <a href="http://localhost:5543/stub_status" target="_blank" class="card nginx-status">🔎 Nginx status</a>
+        <a href="http://localhost:9113/metrics" target="_blank" class="card nginx-exporter"><span class="status-circle" id="status-nginx-exporter"></span>🚦 Nginx Exporter</a>
+        <a href="http://localhost:2801" target="_blank" class="card falco"><span class="status-circle" id="status-falco"></span>🦅 Falco</a>
+        <a href="http://localhost:6379" target="_blank" class="card redis"><span class="status-circle" id="status-redis"></span>🟥 Redis</a>
+        <a href="http://localhost:3100/metrics" target="_blank" class="card loki"><span class="status-circle" id="status-loki"></span>📜 Loki API</a>
+        <a href="http://localhost:9080" target="_blank" class="card promtail"><span class="status-circle" id="status-promtail"></span>🪵 Promtail</a>
+        <a href="http://localhost:5543/stub_status" target="_blank" class="card nginx-status"><span class="status-circle" id="status-nginx-status"></span>🔎 Nginx status</a>
       </div>
       <h2 class="section-title">Testing</h2>
       <div class="links-grid">
-        <a href="http://localhost:6565" target="_blank" class="card k6">🧪 k6</a>
-        <a href="http://localhost:8089" target="_blank" class="card locust">🐛 Locust</a>
+        <a href="http://localhost:6565" target="_blank" class="card k6"><span class="status-circle" id="status-k6"></span>🧪 k6</a>
+        <a href="http://localhost:8089" target="_blank" class="card locust"><span class="status-circle" id="status-locust"></span>🐛 Locust</a>
       </div>
       <h2 class="section-title">Observed Containers</h2>
       <div class="links-grid" id="observed-containers">
-        <a href="http://localhost:5543" target="_blank" class="card oceanhealing">🏥 Ocean Healing</a>
+        <a href="http://localhost:5543" target="_blank" class="card oceanhealing"><span class="status-circle" id="status-oceanhealing"></span>🏥 Ocean Healing</a>
       </div>
     </main>
     <footer>
@@ -53,5 +53,44 @@
       <p class="netdevs-credit">Built by <a href="https://NetDevs.net" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;">NetDevs.net</a></p>
     </footer>
   </div>
+<script>
+const services = [
+  { id: 'prometheus', url: 'http://localhost:9090/-/ready' },
+  { id: 'grafana', url: 'http://localhost:3000/api/health' },
+  { id: 'minio', url: 'http://localhost:9001/minio/health/ready' },
+  { id: 'elasticsearch', url: 'http://localhost:9200' },
+  { id: 'thehive', url: 'http://localhost:9005/health' },
+  { id: 'cortex', url: 'http://localhost:9006/health' },
+  { id: 'nginx-exporter', url: 'http://localhost:9113/metrics' },
+  { id: 'falco', url: 'http://localhost:2801' },
+  { id: 'redis', url: 'http://localhost:6379' },
+  { id: 'loki', url: 'http://localhost:3100/ready' },
+  { id: 'promtail', url: 'http://localhost:9080' },
+  { id: 'nginx-status', url: 'http://localhost:5543/stub_status' },
+  { id: 'k6', url: 'http://localhost:6565' },
+  { id: 'locust', url: 'http://localhost:8089' },
+  { id: 'oceanhealing', url: 'http://localhost:5543/health' }
+];
+
+function checkService(service) {
+  fetch(service.url, { method: 'GET', mode: 'no-cors' })
+    .then(() => setStatus(service.id, true))
+    .catch(() => setStatus(service.id, false));
+}
+
+function setStatus(id, up) {
+  const el = document.getElementById('status-' + id);
+  if (el) {
+    el.classList.remove('up', 'down');
+    el.classList.add(up ? 'up' : 'down');
+  }
+}
+
+function checkAll() {
+  services.forEach(checkService);
+}
+setInterval(checkAll, 10000); // check every 10s
+window.onload = checkAll;
+</script>
 </body>
 </html>

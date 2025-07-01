@@ -1,0 +1,11 @@
+resources:
+  - frontend-deployment.yaml
+  - frontend-ingress.yaml
+  - frontend-hpa.yaml
+  - frontend-pdb.yaml
+  - frontend-networkpolicy.yaml
+
+configMapGenerator:
+  - name: nginx-config
+    files:
+      - nginx.conf
