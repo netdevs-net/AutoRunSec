@@ -6,8 +6,6 @@ namespace: ars
 resources:
   - ../../base
   - ../../components/oceanhealing
-  - monitoring/prometheus-pv.yaml
-  - monitoring/prometheus-pvc.yaml
 
 # Development-specific name suffix
 nameSuffix: -dev
