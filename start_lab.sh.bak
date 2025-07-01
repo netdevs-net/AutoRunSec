@@ -1,0 +1,97 @@
+#!/bin/bash
+
+show_help() {
+    echo "Usage: $0 [--compose] [--k8s] [--help]"
+    echo "  lab using Docker(default)"
+    echo "  --k8s      lab using MicroK8s-in-Docker (advanced)"
+    echo "  --help      Show this help message"
+}
+
+MODE="compose"
+
+for arg in "$@"; do
+  case "$arg" in
+    --compose)
+      MODE="compose";;
+    --k8s)
+      MODE="k8s";;
+    -h|--help)
+      show_help; exit 0;;
+    *)
+      echo "Unknown argument: $arg"; show_help; exit 1;;
+  esac
+done
+
+if [[ "$MODE" == "compose" ]]; then
+  echo "🛠️  Bootstrapping lab environment with Docker Compose..."
+  if ! command -v docker-compose &> /dev/null; then
+      echo "❌ docker-compose not found. Please install Docker Compose."
+      exit 1
+  fi
+  docker-compose pull
+  docker compose -f docker/frontend.yml up -d
+  sleep 5
+  echo "✅ LAB BOOTSTRAP COMPLETE"
+  echo ""
+  echo "Observability:"
+  echo "- 📊 Prometheus:           http://localhost:9090"
+  echo "- 📈 Grafana:              http://localhost:3000 (admin / admin123)"
+  echo "- 🛢️  MinIO Console:        http://localhost:9001   (admin / admin123)"
+  echo "- 🗄️  Elasticsearch:        http://localhost:9200"
+  echo ""
+  echo "Automated Response Security:"
+  echo "- 🐝 TheHive:              http://localhost:9005"
+  echo "- 🧠 Cortex:               http://localhost:9006"
+  echo ""
+  echo "Data Sources"
+  echo "- 🦅 Falco:                http://localhost:2801"
+  echo "- 🟥 Redis:                http://localhost:6379"
+  echo "- 🚦 Nginx Exporter:       http://localhost:9113/metrics"
+  echo "- 🔎 Nginx status:         http://localhost:5543/stub_status"
+  echo "- 📜 Loki API:             http://localhost:3100/metrics"
+  echo "- 🪵 Promtail:             http://localhost:9080"
+  echo ""
+  echo "- 🚪 ARS Entry Page:       http://localhost:8080/"
+  echo ""
+  echo "Tip: Copy/paste these URLs into your browser."
+
+  check_service() {
+    local name="$1"
+    local url="$2"
+    local container="$3"
+    local port
+    port=$(echo "$url" | grep -oE ':[0-9]+' | tr -d ':')
+    if [[ -z "$port" ]]; then
+      port=80
+    fi
+    for i in {1..5}; do
+      if curl -s --max-time 2 "$url" > /dev/null; then
+        echo "✅ $name is UP at $url"
+        return 0
+      fi
+      sleep 2
+    done
+    echo "❌ $name is NOT responding at $url"
+    if [[ -n "$container" ]]; then
+      echo "--- Docker logs for $container ---"
+      docker logs --tail 20 "$container"
+      echo "----------------------------------"
+    fi
+  }
+
+  # Replace the container name with the actual container name for each service as needed
+  check_service "Prometheus" "http://localhost:9090" "prometheus"
+  check_service "Grafana" "http://localhost:3000" "grafana"
+  check_service "MinIO Console" "http://localhost:9001" "minio"
+  check_service "Elasticsearch" "http://localhost:9200" "elasticsearch"
+  check_service "TheHive" "http://localhost:9005" "thehive"
+  check_service "Cortex" "http://localhost:9006" "cortex"
+  check_service "Falco" "http://localhost:2801" "falco"
+  check_service "Redis" "http://localhost:6379" "redis"
+  check_service "Nginx Exporter" "http://localhost:9113/metrics" "nginx-exporter"
+  check_service "Nginx status" "http://localhost:5543/stub_status" "oceanhealing"
+  check_service "Loki API" "http://localhost:3100/metrics" "loki"
+  check_service "Promtail" "http://localhost:9080" "promtail"
+  check_service "ARS Entry Page" "http://localhost:8080" "admin-cover-frontend"
+
+fi

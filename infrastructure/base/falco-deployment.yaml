@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: falco
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: falco
+  template:
+    metadata:
+      labels:
+        app: falco
+    spec:
+      containers:
+      - name: falco
+        image: falcosecurity/falco:latest
+        securityContext:
+          privileged: true
+        env:
+        - name: FALCO_JSON_OUTPUT
+          value: "true"
+        - name: FALCO_HTTP_OUTPUT_URL
+          value: "http://falco-sidekick:2801"
+        ports:
+        - containerPort: 8765
+        volumeMounts:
+        - name: dev
+          mountPath: /host/dev
+        - name: proc
+          mountPath: /host/proc:ro
+        - name: modules
+          mountPath: /host/lib/modules:ro
+        - name: usr
+          mountPath: /host/usr:ro
+        - name: docker-sock
+          mountPath: /host/var/run/docker.sock
+      volumes:
+      - name: dev
+        hostPath:
+          path: /dev
+      - name: proc
+        hostPath:
+          path: /proc
+      - name: modules
+        hostPath:
+          path: /lib/modules
+      - name: usr
+        hostPath:
+          path: /usr
+      - name: docker-sock
+        hostPath:
+          path: /var/run/docker.sock
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: falco
+spec:
+  selector:
+    app: falco
+  ports:
+    - protocol: TCP
+      port: 8765
+      targetPort: 8765
+  type: ClusterIP

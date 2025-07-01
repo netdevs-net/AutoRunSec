@@ -35,7 +35,6 @@ patches:
         value: "256Mi"
 
   # Patch Prometheus Service NodePort
-  - path: monitoring/prometheus-service-nodeport-patch.yaml
 
 # Development-specific configurations
 configMapGenerator:
