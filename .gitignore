@@ -11,3 +11,6 @@ clean-creds*
 # Ignore example placeholder secrets
 !*.example.yaml
 .DS_Store
+
+# Kubernetes runtime data (Grafana, Prometheus, etc.)
+k8s-data/
