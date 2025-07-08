@@ -33,3 +33,25 @@ spec:
               port: 5543
             initialDelaySeconds: 10
             periodSeconds: 5
+        - name: nginx-exporter
+          image: nginx/nginx-prometheus-exporter:1.1.0
+          args:
+            - '-nginx.scrape-uri=http://localhost:5543/stub_status'
+          ports:
+            - containerPort: 9113
+        - name: promtail
+          image: grafana/promtail:2.8.0
+          args:
+            - '-config.file=/etc/promtail/promtail.yaml'
+          volumeMounts:
+            - name: logs
+              mountPath: /var/log/app
+            - name: promtail-config
+              mountPath: /etc/promtail/promtail.yaml
+              subPath: promtail.yaml
+      volumes:
+        - name: logs
+          emptyDir: {}
+        - name: promtail-config
+          configMap:
+            name: promtail-sidecar-config

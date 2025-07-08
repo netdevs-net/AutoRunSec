@@ -5,7 +5,6 @@ resources:
   - nginx-exporter-deployment.yaml
 
 labels:
-  - includeSelectors: true
-    pairs:
+  - pairs:
       app.kubernetes.io/part-of: nginx-exporter
       app.kubernetes.io/managed-by: kustomize 

@@ -4,9 +4,10 @@ kind: Kustomization
 namespace: ars
 
 resources:
-  - falco-config.yaml
-  - falco-daemonset.yaml
   - falco-sidekick-deployment.yaml
+#  - falco-config.yaml
+#  - falco-daemonset.yaml
+#  - falco-rules.yaml
 
 labels:
   - includeSelectors: true
@@ -15,14 +16,12 @@ labels:
       app.kubernetes.io/managed-by: kustomize
 
 images:
-  - name: falcosecurity/falco
-    newTag: latest
   - name: falcosecurity/falcosidekick
     newTag: 2.30.0
 
 configMapGenerator:
-  - name: falco-rules
-    files:
-      - falco_rules.yaml=falco_rules.yaml
-    options:
-      disableNameSuffixHash: true
+#  - name: falco-rules
+#    files:
+#      - falco_rules.yaml=falco_rules.yaml
+#    options:
+#      disableNameSuffixHash: true

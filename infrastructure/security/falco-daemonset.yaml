@@ -22,14 +22,16 @@ spec:
       - name: falco
         image: falcosecurity/falco:latest
         imagePullPolicy: Always
+        env:
+        - name: FALCO_DRIVER
+          value: "userspace"
+        - name: FALCO_DRIVER_LOADER
+          value: "disabled"
+        - name: FALCO_DRIVER_LOADER_OPTS
+          value: "--userspace"
         securityContext:
-          privileged: true
-          allowPrivilegeEscalation: true
-          capabilities:
-            add:
-              - SYS_PTRACE
-              - SYS_ADMIN
-              - SYSLOG
+          privileged: false
+          allowPrivilegeEscalation: false
         volumeMounts:
         - name: falco-config
           mountPath: /etc/falco/falco.yaml
@@ -37,23 +39,6 @@ spec:
         - name: falco-rules
           mountPath: /etc/falco/falco_rules.yaml
           subPath: falco_rules.yaml
-        - name: dev-fs
-          mountPath: /host/dev
-          readOnly: true
-        - name: proc-fs
-          mountPath: /host/proc
-          readOnly: true
-        - name: boot-fs
-          mountPath: /host/boot
-          readOnly: true
-        - name: lib-modules
-          mountPath: /host/lib/modules
-          readOnly: true
-        - name: usr-src
-          mountPath: /host/usr/src
-          readOnly: true
-        - name: falco-bpf
-          mountPath: /root/.falco
       volumes:
       - name: falco-config
         configMap:
@@ -61,20 +46,3 @@ spec:
       - name: falco-rules
         configMap:
           name: falco-rules
-      - name: dev-fs
-        hostPath:
-          path: /dev
-      - name: proc-fs
-        hostPath:
-          path: /proc
-      - name: boot-fs
-        hostPath:
-          path: /boot
-      - name: lib-modules
-        hostPath:
-          path: /lib/modules
-      - name: usr-src
-        hostPath:
-          path: /usr/src
-      - name: falco-bpf
-        emptyDir: {}

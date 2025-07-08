@@ -6,6 +6,9 @@ namespace: monitoring
 resources:
   - ../components/monitoring
   - ../components/grafana
+  - ../components/kube-state-metrics
+  - ../components/node-exporter
+  - ../components/loki
 
 patches:
   - target:
@@ -28,12 +31,6 @@ patches:
       - op: replace
         path: /spec/ports/0/nodePort
         value: 30300
-
-labels:
-  - includeSelectors: true
-    pairs:
-      app.kubernetes.io/part-of: monitoring
-      app.kubernetes.io/managed-by: kustomize
 
 images:
   - name: prom/prometheus
