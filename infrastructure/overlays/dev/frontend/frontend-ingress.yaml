@@ -7,7 +7,7 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-    - host: frontend.local
+    - host: frontend-dev.local
       http:
         paths:
           - path: /

@@ -31,6 +31,13 @@ spec:
         image: strangebee/thehive:5.2
         ports:
         - containerPort: 9000
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
         volumeMounts:
         - name: thehive-data
           mountPath: /data
