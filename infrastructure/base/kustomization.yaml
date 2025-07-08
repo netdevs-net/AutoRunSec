@@ -3,9 +3,6 @@ kind: Kustomization
 
 namespace: ars
 
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-namespace: ars
 resources:
   - redis-deployment.yaml
   - minio-deployment.yaml
@@ -13,6 +10,8 @@ resources:
   - storage/storage-classes.yaml
   - networking/network-policies.yaml
   - security/rbac.yaml
+  - ../components/nginx-exporter
+  - ../components/promtail
 labels:
   - includeSelectors: true
     pairs:
@@ -37,4 +36,3 @@ secretGenerator:
     literals:
       - DB_PASSWORD=change-me
       - API_KEY=change-me
-namespace: ars
