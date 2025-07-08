@@ -5,11 +5,7 @@ namespace: ars
 
 resources:
   - redis-deployment.yaml
-  - minio-deployment.yaml
 
-  - storage/storage-classes.yaml
-  - networking/network-policies.yaml
-  - security/rbac.yaml
   - ../components/nginx-exporter
   - ../components/promtail
 labels:

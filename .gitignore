@@ -10,3 +10,4 @@ gitleaks*
 clean-creds*
 # Ignore example placeholder secrets
 !*.example.yaml
+.DS_Store

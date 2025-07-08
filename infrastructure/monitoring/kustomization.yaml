@@ -4,11 +4,8 @@ kind: Kustomization
 namespace: monitoring
 
 resources:
-  - prometheus-pv.yaml
-  - prometheus-rbac.yaml
-  - prometheus-pvc.yaml
-  - prometheus-config.yaml
-  - grafana-deployment.yaml
+  - ../components/monitoring
+  - ../components/grafana
 
 patches:
   - target:

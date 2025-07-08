@@ -37,8 +37,6 @@ patches:
         path: /spec/template/spec/containers/0/resources/requests/memory
         value: "256Mi"
 
-  # Patch Prometheus Service NodePort
-
 # Development-specific configurations
 configMapGenerator:
   - name: infrastructure-config
