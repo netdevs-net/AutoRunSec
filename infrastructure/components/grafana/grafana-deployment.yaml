@@ -31,13 +31,6 @@ spec:
         fsGroup: 472
         supplementalGroups:
           - 0
-      initContainers:
-        - name: fix-permissions
-          image: busybox
-          command: ["sh", "-c", "chown -R 472:0 /var/lib/grafana && chmod -R 0775 /var/lib/grafana"]
-          volumeMounts:
-            - name: grafana-data
-              mountPath: /var/lib/grafana
       containers:
       - name: grafana
         image: grafana/grafana:10.4.2
@@ -49,10 +42,15 @@ spec:
         volumeMounts:
         - name: grafana-data
           mountPath: /var/lib/grafana
+        - name: grafana-datasources
+          mountPath: /etc/grafana/provisioning/datasources
       volumes:
       - name: grafana-data
         persistentVolumeClaim:
           claimName: grafana-data
+      - name: grafana-datasources
+        configMap:
+          name: grafana-datasources
 ---
 apiVersion: v1
 kind: Service

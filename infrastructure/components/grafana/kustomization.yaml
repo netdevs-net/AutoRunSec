@@ -3,6 +3,7 @@ kind: Kustomization
 
 resources:
   - grafana-deployment.yaml
+  - grafana-datasources.yaml
 
 labels:
   - pairs:

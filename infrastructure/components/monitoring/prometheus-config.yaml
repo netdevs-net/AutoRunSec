@@ -10,6 +10,7 @@ data:
       evaluation_interval: 15s
 
     rule_files:
+      - prometheus-alerts.yaml
       # - "first_rules.yml"
       # - "second_rules.yml"
 

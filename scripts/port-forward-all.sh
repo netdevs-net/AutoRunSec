@@ -24,29 +24,26 @@ start_port_forward() {
         sleep 1
     fi
     
-    # Check if service exists
+    # Check if service exists (try ars namespace first, then monitoring)
     if kubectl get service $service_name -n $NAMESPACE >/dev/null 2>&1; then
         # Start port-forwarding in background
         kubectl port-forward service/$service_name $local_port:$remote_port -n $NAMESPACE >/dev/null 2>&1 &
         echo "✅ $description: http://localhost:$local_port"
+    elif kubectl get service $service_name -n monitoring >/dev/null 2>&1; then
+        # Start port-forwarding in background (monitoring namespace)
+        kubectl port-forward service/$service_name $local_port:$remote_port -n monitoring >/dev/null 2>&1 &
+        echo "✅ $description: http://localhost:$local_port (monitoring namespace)"
     else
-        echo "❌ Service $service_name not found"
+        echo "❌ Service $service_name not found in ars or monitoring namespace"
     fi
 }
 
 # Start all services
-start_port_forward "ars-prometheus-dev" "9090" "9090" "Prometheus"
+start_port_forward "prometheus" "9090" "9090" "Prometheus"
 start_port_forward "grafana" "3000" "3000" "Grafana"
-start_port_forward "ars-minio-dev" "9001" "9001" "MinIO Console"
-start_port_forward "elasticsearch" "9200" "9200" "Elasticsearch"
-start_port_forward "thehive" "9005" "9000" "TheHive"
-start_port_forward "cortex" "9006" "9001" "Cortex"
-start_port_forward "ars-falco-dev" "2801" "8765" "Falco"
-start_port_forward "ars-redis-dev" "6379" "6379" "Redis"
 start_port_forward "loki" "3100" "3100" "Loki API"
+start_port_forward "tempo" "3200" "3200" "Tempo"
 start_port_forward "oceanhealing-dev" "5543" "5543" "Ocean Healing"
-start_port_forward "ars-nginx-exporter-dev" "9113" "9113" "Nginx Exporter"
-start_port_forward "ars-promtail-dev" "9080" "9080" "Promtail"
 
 echo ""
 echo "🎉 All services are now accessible!"
@@ -54,20 +51,11 @@ echo ""
 echo "📊 Observability:"
 echo "   Prometheus: http://localhost:9090"
 echo "   Grafana: http://localhost:3000"
-echo "   MinIO Console: http://localhost:9001"
-echo "   Elasticsearch: http://localhost:9200"
-echo ""
-echo "🔒 Security:"
-echo "   TheHive: http://localhost:9005"
-echo "   Cortex: http://localhost:9006"
-echo "   Falco: http://localhost:2801"
-echo ""
-echo "🗄️ Data Sources:"
-echo "   Redis: http://localhost:6379"
 echo "   Loki API: http://localhost:3100"
+echo "   Tempo: http://localhost:3200"
+echo ""
+echo "🌊 Applications:"
 echo "   Ocean Healing: http://localhost:5543"
-echo "   Nginx Exporter: http://localhost:9113"
-echo "   Promtail: http://localhost:9080"
 echo ""
 echo "🛑 To stop all port-forwarding:"
 echo "   pkill -f 'kubectl port-forward'"

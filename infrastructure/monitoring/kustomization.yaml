@@ -9,6 +9,7 @@ resources:
   - ../components/kube-state-metrics
   - ../components/node-exporter
   - ../components/loki
+  - ../components/tempo
 
 patches:
   - target:

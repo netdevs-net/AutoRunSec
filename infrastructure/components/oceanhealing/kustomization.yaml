@@ -3,6 +3,8 @@ kind: Kustomization
 
 resources:
   - oceanhealing-dev-deployment.yaml
+  - oceanhealing-service.yaml
+  - otel-config.yaml
 
 configMapGenerator:
   - name: promtail-sidecar-config
