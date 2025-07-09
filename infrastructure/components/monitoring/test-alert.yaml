@@ -1,0 +1,11 @@
+groups:
+  - name: test-alerts
+    rules:
+      - alert: TestAlert
+        expr: vector(1)
+        for: 0s
+        labels:
+          severity: warning
+        annotations:
+          summary: "Test alert - this should fire immediately"
+          description: "This is a test alert to verify the alerting pipeline is working." 
