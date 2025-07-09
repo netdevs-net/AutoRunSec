@@ -1,0 +1,61 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tempo-config
+  namespace: monitoring
+data:
+  tempo.yaml: |
+    server:
+      http_listen_port: 3200
+      grpc_listen_port: 9095
+    
+    distributor:
+      receivers:
+        otlp:
+          protocols:
+            grpc:
+              endpoint: "0.0.0.0:4317"
+            http:
+              endpoint: "0.0.0.0:4318"
+        jaeger:
+          protocols:
+            thrift_http:
+              endpoint: "0.0.0.0:14268"
+            grpc:
+              endpoint: "0.0.0.0:14250"
+            thrift_binary:
+              endpoint: "0.0.0.0:6832"
+            thrift_compact:
+              endpoint: "0.0.0.0:6831"
+        zipkin:
+          endpoint: "0.0.0.0:9411"
+    
+    storage:
+      trace:
+        backend: local
+        local:
+          path: /var/tempo/traces
+        wal:
+          path: /var/tempo/wal
+    
+    compactor:
+      compaction:
+        block_retention: 1h
+        compacted_block_retention: 10m
+    
+    metrics_generator:
+      storage:
+        path: /var/tempo/generator/wal
+      registry:
+        external_labels:
+          source: tempo
+          cluster: docker-desktop
+      processors:
+        service_graphs:
+          wait: 10s
+        span_metrics:
+          dimensions:
+            - service.name
+            - operation
+            - span.kind
+            - status.code 
