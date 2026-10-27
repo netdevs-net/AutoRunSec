@@ -1,6 +1,21 @@
-# ARS Kubernetes Cluster Infrastructure
+# AutoRunSec — ARS Kubernetes Cluster Infrastructure
 
-This repository defines the full infrastructure for the ARS (Automated Response Security) platform, focusing on a robust, observable, and secure microservices stack running on Kubernetes. All manifests, overlays, and scripts are located in the `infrastructure/` directory.
+**A base framework for standing up a monitored, resilient Kubernetes environment quickly.**
+
+AutoRunSec (ARS, "Automated Response Security") bundles three layers that usually get bolted on one at a time into a single Kustomize deploy:
+
+- **Observability** — Prometheus for metrics, Loki for logs via Promtail, Grafana for dashboards over both.
+- **Runtime security** — Falco watching syscalls and container behaviour, with Falcosidekick fanning alerts out.
+- **Incident response** — TheHive for case management and Cortex for automated analysis, backed by Elasticsearch.
+
+Supporting services (MinIO for object storage, Redis for cache and queueing) ship alongside network policies, RBAC, horizontal autoscaling, secret scanning and a documented restore path. Everything lives in `infrastructure/` and goes up with `kubectl apply -k`.
+
+It began as a self-set challenge — build the whole monitored, secure stack end to end rather than read about it — and it is most useful now as a starting point to copy into a new cluster and adapt.
+
+> **Before you deploy:** `oceanhealing-dev` is the sample workload the stack monitors — swap it for your own.
+> Falco forwards to Falcosidekick, but Falcosidekick's webhook target in
+> `infrastructure/security/falco-sidekick-deployment.yaml` is still a placeholder
+> (`webhook.site/your-webhook-url`). Point it at TheHive to close the detection-to-case loop.
 
 ---
 
