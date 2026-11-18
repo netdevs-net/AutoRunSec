@@ -3,6 +3,7 @@
 secrets.yaml
 .env
 .env.*
+!.env.example
 infrastructure/overlays/dev/ghcr-creds.yaml
 # GHCR secret for dev environment
 infrastructure/overlays/dev/ghcr-creds-dev.yaml

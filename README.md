@@ -199,3 +199,14 @@ kubectl apply -k infrastructure/overlays/prod/
 
 ## Questions?
 If you have questions about the stack, observability, or how to extend the cluster, open an issue or contact the maintainers.
+
+## Credentials
+
+The stack takes Grafana, MinIO and AWX credentials from the environment and **refuses to start if any are unset**. Copy `.env.example` to `.env` and set a distinct value for each:
+
+```bash
+cp .env.example .env
+openssl rand -base64 24   # once per variable
+```
+
+This is deliberate. Earlier revisions shipped working defaults (`admin`, `admin123`, `password`), which meant anyone adapting this framework for a real cluster inherited them unless they audited every compose file.
