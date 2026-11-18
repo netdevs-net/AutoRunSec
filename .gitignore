@@ -16,3 +16,7 @@ clean-creds*
 
 # Kubernetes runtime data (Grafana, Prometheus, etc.)
 k8s-data/
+
+# Third-party binaries: fetch at run time, never commit
+conftest
+conftest_*.tar.gz
